@@ -1,7 +1,7 @@
 #!/bin/sh
 init()
 {
-    mkdir -p /content/ssh
+    mkdir -p /content/drive
     apt-get install -y sshfs
     if test -f "/root/.ssh/id_rsa"; then
         echo "Private key already exists, skip creation..."
@@ -11,15 +11,15 @@ init()
 
     cat > /usr/bin/mount_colab_sftp << "EOL"
 sleep_seconds=5
-umount /content/ssh > /dev/null 2>&1
-until error=$(sshfs -o reconnect,ServerAliveInterval=15,ServerAliveCountMax=3,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no root@$1:/root -p ${2:-2222} /content/ssh 2>&1 >/dev/null); do
+umount /content/drive > /dev/null 2>&1
+until error=$(sshfs -o reconnect,ServerAliveInterval=15,ServerAliveCountMax=3,UserKnownHostsFile=/dev/null,StrictHostKeyChecking=no root@$1:/root -p ${2:-2222} /content/drive 2>&1 >/dev/null); do
     error_str="Error: $error.\nWill try again in $sleep_seconds seconds!"
     error_len=${#error_str}
     echo -e $error_str
     sleep $sleep_seconds
     printf '\b%.0s' $(seq 1 $error_len)
 done
-echo 'Mounted /content/ssh'
+echo 'Mounted /content/drive'
 EOL
     chmod a+x /usr/bin/mount_colab_sftp
 }
